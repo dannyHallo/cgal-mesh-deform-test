@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "${workspaceFolder}/build.bat"
+    },
+    {
+      "label": "build debug version",
+      "type": "shell",
+      "command": "${workspaceFolder}/build.bat --debug"
+    }
+  ]
+}

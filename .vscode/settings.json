@@ -1,0 +1,22 @@
+{
+  "files.exclude": {
+    "**/.git": false
+  },
+  "clangd.arguments": [
+    // number of async workers used by clangd. background index also uses this many workers
+    "-j=8",
+
+    // specify a path to look for compile_commands.json
+    "--compile-commands-dir=.vscode/",
+
+    // never insert headers automatically
+    "--header-insertion=never",
+
+    // load pre compiled headers from memory, this is faster than loading from disk
+    "--pch-storage=memory",
+
+    // enable clang tidy
+    "--clang-tidy"
+  ],
+  "shaderc-lint.glslcArgs": "--target-spv=spv1.5 -I./build/Release/vcpkg_installed/x64-windows/include/ -I./src/shared/"
+}

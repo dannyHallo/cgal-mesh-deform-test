@@ -1,0 +1,9 @@
+---
+Language: Cpp
+BasedOnStyle: LLVM
+AlignConsecutiveAssignments: Consecutive
+ColumnLimit: 100
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
+---
+
