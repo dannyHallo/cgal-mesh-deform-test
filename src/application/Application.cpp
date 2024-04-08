@@ -18,8 +18,8 @@ namespace PMP = CGAL::Polygon_mesh_processing;
 
 namespace {
 std::string const kResourceFolderPrefix = "C:/Users/danny/Desktop/cgal-mesh-deform-test/resources/";
-std::string const kInputPrefix          = kResourceFolderPrefix + "models/input-models/";
-std::string const kOutputPrefix         = kResourceFolderPrefix + "models/output-models";
+std::string const kInputPrefix          = kResourceFolderPrefix + "input-models/out/";
+std::string const kOutputPrefix         = kResourceFolderPrefix + "output-models/";
 
 std::string _makeFullInputPath(std::string const &filename) { return kInputPrefix + filename; }
 std::string _makeFullOutputPath(std::string const &filename) { return kOutputPrefix + filename; }
