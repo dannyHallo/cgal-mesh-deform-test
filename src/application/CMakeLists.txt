@@ -9,4 +9,5 @@ target_include_directories(src-application PRIVATE
 
 target_link_libraries(src-application PRIVATE
     src-remesh
+    src-mesh-simplification
 )

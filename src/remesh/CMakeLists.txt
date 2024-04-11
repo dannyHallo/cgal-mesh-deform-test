@@ -8,5 +8,6 @@ target_include_directories(src-remesh PRIVATE
 )
 
 target_link_libraries(src-remesh PRIVATE
+    src-io
     CGAL::CGAL
 )

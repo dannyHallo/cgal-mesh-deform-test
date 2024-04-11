@@ -1,3 +1,4 @@
+#include "Remesh.hpp"
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Polygon_mesh_processing/IO/polygon_mesh_io.h>
@@ -7,6 +8,7 @@
 #include <boost/iterator/function_output_iterator.hpp>
 
 #include "common/defines.hpp"
+#include "io/Io.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -25,23 +27,7 @@ typedef Mesh::Halfedge_index Halfedge_index;
 
 namespace PMP = CGAL::Polygon_mesh_processing;
 
-namespace Remesh {
-
-struct halfedge2edge {
-  halfedge2edge(const Mesh &m, std::vector<edge_descriptor> &edges) : mMesh(m), mEdges(edges) {}
-  void operator()(const halfedge_descriptor &h) const { mEdges.push_back(edge(h, mMesh)); }
-  const Mesh &mMesh;
-  std::vector<edge_descriptor> &mEdges;
-};
-
 namespace {
-std::string const kResourceFolderPrefix = "C:/Users/danny/Desktop/cgal-mesh-deform-test/resources/";
-std::string const kInputPrefix          = kResourceFolderPrefix + "input-models/out/";
-std::string const kOutputPrefix         = kResourceFolderPrefix + "output-models/";
-
-std::string _makeFullInputPath(std::string const &filename) { return kInputPrefix + filename; }
-std::string _makeFullOutputPath(std::string const &filename) { return kOutputPrefix + filename; }
-
 std::optional<Mesh> _readMesh(std::string const &filePath) {
   std::cout << "Loading mesh from path (" << filePath << ")..." << std::endl;
 
@@ -58,6 +44,16 @@ std::optional<Mesh> _readMesh(std::string const &filePath) {
   std::cout << "Faces: " << num_faces(mesh) << std::endl;
   return std::optional<Mesh>(mesh);
 }
+} // namespace
+
+namespace Remesh {
+
+struct halfedge2edge {
+  halfedge2edge(const Mesh &m, std::vector<edge_descriptor> &edges) : mMesh(m), mEdges(edges) {}
+  void operator()(const halfedge_descriptor &h) const { mEdges.push_back(edge(h, mMesh)); }
+  const Mesh &mMesh;
+  std::vector<edge_descriptor> &mEdges;
+};
 
 // Helper function to calculate the normal of a face
 Vector_3 calculate_face_normal(const Mesh &mesh, Face_index f) {
@@ -97,16 +93,15 @@ std::vector<Edge_index> find_edges_by_angle_threshold(Mesh &mesh, double angle_t
 
   return edges_over_threshold;
 }
-} // namespace
 
 void remesh(std::string const &filename, double angleLimDeg, double targetEdgeLength,
             unsigned int nbIter) {
-  std::string const inputFilePath  = _makeFullInputPath(filename);
-  std::string const outputFilePath = _makeFullOutputPath(filename);
+  std::string const inputFilePath  = Io::makeFullInputPath(filename);
+  std::string const outputFilePath = Io::makeFullOutputPath(filename);
 
-  auto meshOpt = _readMesh(inputFilePath);
-  assert(meshOpt.has_value());
-  Mesh &mesh = meshOpt.value();
+  auto maybeMesh = _readMesh(inputFilePath);
+  assert(maybeMesh.has_value());
+  Mesh &mesh = maybeMesh.value();
 
   std::vector<edge_descriptor> border;
   PMP::border_halfedges(faces(mesh), mesh,
@@ -142,5 +137,4 @@ void remesh(std::string const &filename, double angleLimDeg, double targetEdgeLe
   std::cout << "Remeshed mesh written to path (" << outputFilePath << ")" << std::endl;
   auto remeshedMeshOpt = _readMesh(outputFilePath);
 }
-
 } // namespace Remesh

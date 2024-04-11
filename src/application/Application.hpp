@@ -15,5 +15,6 @@ private:
   };
 
   // return 1 if the user wants to exit
-  ReturnCode _iteration();
+  ReturnCode _remeshKernal();
+  ReturnCode _simplifyKernal();
 };
