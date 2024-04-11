@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 class Application {
 public:
   Application();
@@ -10,6 +8,12 @@ public:
   void run();
 
 private:
-  void _remesh(std::string const &filename, double target_edge_length = 0.04,
-               unsigned int nb_iter = 10);
+  enum class ReturnCode {
+    kContinue,
+    kExit,
+    kFailure,
+  };
+
+  // return 1 if the user wants to exit
+  ReturnCode _iteration();
 };

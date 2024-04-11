@@ -14,6 +14,9 @@ project(cgal-mesh-deform-test)
 # CGAL::CGAL
 find_package(CGAL CONFIG REQUIRED)
 
+# Ceres::ceres
+find_package(Ceres CONFIG REQUIRED)
+
 set(dep_INCLUDE_DIRS "")
 list(APPEND dep_INCLUDE_DIRS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include/")
 

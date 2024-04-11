@@ -8,3 +8,5 @@ build/
 shaders/generated/
 
 dep/vcpkg/
+
+resources/result/
