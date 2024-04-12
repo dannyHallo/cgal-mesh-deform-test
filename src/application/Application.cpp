@@ -10,12 +10,34 @@ Application::Application()  = default;
 Application::~Application() = default;
 
 void Application::run() {
+  static std::string const kRemesh   = "remesh";
+  static std::string const kSimplify = "simplify";
+
+  static std::string usingCommand = kRemesh;
+  std::string inputLine; // Use to read the whole line
+
+  // command
+  std::cout << "Enter the command /[" << usingCommand << "]: ";
+  std::getline(std::cin, inputLine); // Read the whole line
+  if (!inputLine.empty()) {
+    usingCommand = inputLine;
+  }
+
   for (;;) {
-    // ReturnCode code = _remeshKernal();
-    ReturnCode code = _simplifyKernal();
+    ReturnCode code = _commandKernal(usingCommand);
     if (code == ReturnCode::kExit) {
       break;
     }
+  }
+}
+
+Application::ReturnCode Application::_commandKernal(std::string const &command) {
+  if (command == "remesh") {
+    return _remeshKernal();
+  } else if (command == "simplify") {
+    return _simplifyKernal();
+  } else {
+    return ReturnCode::kExit;
   }
 }
 
