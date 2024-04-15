@@ -90,6 +90,13 @@ Application::ReturnCode Application::_simplifyKernal() {
     return ReturnCode::kExit;
   }
 
+  static std::string usingPolicy = "cp";
+  std::cout << "Enter the policy /[" << usingPolicy << "]: ";
+  std::getline(std::cin, inputLine); // Read the whole line
+  if (!inputLine.empty()) {
+    usingPolicy = inputLine;
+  }
+
   static size_t usingOutputFaceCount = 6050;
   std::cout << "Enter the output face count /[" << usingOutputFaceCount << "]: ";
   std::getline(std::cin, inputLine); // Read the whole line
@@ -97,7 +104,23 @@ Application::ReturnCode Application::_simplifyKernal() {
     std::stringstream(inputLine) >> usingOutputFaceCount; // Convert to size_t
   }
 
-  MeshSimplification::edgeCollapse(usingFileName, usingOutputFaceCount);
+  // select policy here
+  MeshSimplification::GarlandHeckbertPolicy policy =
+      MeshSimplification::GarlandHeckbertPolicy::kClassicPlane;
+  if (usingPolicy == "cp") {
+    policy = MeshSimplification::GarlandHeckbertPolicy::kClassicPlane;
+  } else if (usingPolicy == "pp") {
+    policy = MeshSimplification::GarlandHeckbertPolicy::kProbabilisticPlane;
+  } else if (usingPolicy == "ct") {
+    policy = MeshSimplification::GarlandHeckbertPolicy::kClassicTriangle;
+  } else if (usingPolicy == "pt") {
+    policy = MeshSimplification::GarlandHeckbertPolicy::kProbabilisticTriangle;
+  } else {
+    std::cerr << "Invalid policy" << std::endl;
+    return ReturnCode::kFailure;
+  }
+
+  MeshSimplification::edgeCollapse(usingFileName, usingOutputFaceCount, policy);
 
   return ReturnCode::kContinue;
 }
