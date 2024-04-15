@@ -3,6 +3,7 @@
 #include <string>
 
 namespace Remesh {
-void remesh(std::string const &filename, double angleLimDeg, double targetEdgeLength,
-            unsigned int nbIter);
-}
+
+void isoRemesh(std::string const &filename, double targetEdgeLength, unsigned int nbIter);
+
+} // namespace Remesh

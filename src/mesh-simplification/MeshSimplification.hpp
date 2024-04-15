@@ -3,5 +3,7 @@
 #include <string>
 
 namespace MeshSimplification {
-void meshSimplification(std::string const &filename, double stopRatio = 0.1);
+
+void edgeCollapse(std::string const &filename, size_t outputFaceCount);
+
 }

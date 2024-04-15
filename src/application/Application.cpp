@@ -42,7 +42,7 @@ Application::ReturnCode Application::_commandKernal(std::string const &command) 
 }
 
 Application::ReturnCode Application::_remeshKernal() {
-  static std::string usingFileName = "o_jeep.obj";
+  static std::string usingFileName = "o_pig_lo.obj";
   std::string inputLine; // Use to read the whole line
 
   // filename
@@ -63,13 +63,6 @@ Application::ReturnCode Application::_remeshKernal() {
     std::stringstream(inputLine) >> usingTargetEdgeLength; // Convert to double
   }
 
-  static double usingAngleLimDeg = 40.0;
-  std::cout << "Enter the angle limit in degrees /[" << usingAngleLimDeg << "]: ";
-  std::getline(std::cin, inputLine); // Read the whole line
-  if (!inputLine.empty()) {
-    std::stringstream(inputLine) >> usingAngleLimDeg; // Convert to double
-  }
-
   static unsigned int usingNbIter = 10;
   std::cout << "Enter the number of iterations /[" << usingNbIter << "]: ";
   std::getline(std::cin, inputLine); // Read the whole line
@@ -77,13 +70,13 @@ Application::ReturnCode Application::_remeshKernal() {
     std::stringstream(inputLine) >> usingNbIter; // Convert to unsigned int
   }
 
-  Remesh::remesh(usingFileName, usingAngleLimDeg, usingTargetEdgeLength, usingNbIter);
+  Remesh::isoRemesh(usingFileName, usingTargetEdgeLength, usingNbIter);
 
   return ReturnCode::kContinue;
 }
 
 Application::ReturnCode Application::_simplifyKernal() {
-  static std::string usingFileName = "o_jeep.obj";
+  static std::string usingFileName = "o_pig_lo_remeshed.obj";
   std::string inputLine; // Use to read the whole line
 
   // filename
@@ -97,14 +90,14 @@ Application::ReturnCode Application::_simplifyKernal() {
     return ReturnCode::kExit;
   }
 
-  static double usingStopRatio = 0.1;
-  std::cout << "Enter the stop ratio /[" << usingStopRatio << "]: ";
+  static size_t usingOutputFaceCount = 6050;
+  std::cout << "Enter the output face count /[" << usingOutputFaceCount << "]: ";
   std::getline(std::cin, inputLine); // Read the whole line
   if (!inputLine.empty()) {
-    std::stringstream(inputLine) >> usingStopRatio; // Convert to double
+    std::stringstream(inputLine) >> usingOutputFaceCount; // Convert to size_t
   }
 
-  MeshSimplification::meshSimplification(usingFileName, usingStopRatio);
+  MeshSimplification::edgeCollapse(usingFileName, usingOutputFaceCount);
 
   return ReturnCode::kContinue;
 }
