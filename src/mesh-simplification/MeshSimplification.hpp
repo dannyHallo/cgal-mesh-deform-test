@@ -5,13 +5,15 @@
 namespace MeshSimplification {
 
 enum class GarlandHeckbertPolicy {
+  kNone,
   kClassicPlane,
   kProbabilisticPlane,
   kClassicTriangle,
-  kProbabilisticTriangle
+  kProbabilisticTriangle,
 };
 
 void edgeCollapse(std::string const &filename, size_t outputFaceCount,
-                  GarlandHeckbertPolicy policy = GarlandHeckbertPolicy::kClassicPlane);
+                  GarlandHeckbertPolicy policy);
+
 
 } // namespace MeshSimplification

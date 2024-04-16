@@ -20,4 +20,5 @@ private:
   ReturnCode _commandKernal(std::string const &command);
   ReturnCode _remeshKernal();
   ReturnCode _simplifyKernal();
+  ReturnCode _benchmarkKernal();
 };

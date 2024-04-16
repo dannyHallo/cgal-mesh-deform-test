@@ -59,12 +59,27 @@ void _processMesh(Mesh &mesh, size_t outputFaceCount,
   SMS::edge_collapse(mesh, stop, CGAL::parameters::get_cost(gh_cost).get_placement(placement));
 }
 
-} // namespace
+void edgeCollapseDefault(std::string const &filename, size_t outputFaceCount) {
+  std::string const inputFilePath  = Io::makeFullInputPath(filename);
+  std::string const outputFilePath = Io::makeFullOutputPath(filename);
 
-namespace MeshSimplification {
+  auto maybeSurfaceMesh = _readMesh(inputFilePath);
+  assert(maybeSurfaceMesh.has_value() && "Failed to read input mesh.");
+  auto &surface_mesh = maybeSurfaceMesh.value();
 
-void edgeCollapse(std::string const &filename, size_t outputFaceCount,
-                  GarlandHeckbertPolicy policy) {
+  SMS::Face_count_stop_predicate<Mesh> stop(outputFaceCount);
+
+  int r = SMS::edge_collapse(surface_mesh, stop);
+
+  CGAL::IO::write_polygon_mesh(outputFilePath, surface_mesh,
+                               CGAL::parameters::stream_precision(17));
+
+  std::cout << "Remeshed mesh written to path (" << outputFilePath << ")" << std::endl;
+  // auto remeshedMeshOpt = _readMesh(outputFilePath);
+}
+
+void edgeCollapseGarlandHeckbert(std::string const &filename, size_t outputFaceCount,
+                                 MeshSimplification::GarlandHeckbertPolicy policy) {
   std::string const inputFilePath  = Io::makeFullInputPath(filename);
   std::string const outputFilePath = Io::makeFullOutputPath(filename);
 
@@ -82,7 +97,20 @@ void edgeCollapse(std::string const &filename, size_t outputFaceCount,
                                CGAL::parameters::stream_precision(17));
 
   std::cout << "Remeshed mesh written to path (" << outputFilePath << ")" << std::endl;
-  auto remeshedMeshOpt = _readMesh(outputFilePath);
+  // auto remeshedMeshOpt = _readMesh(outputFilePath);
+}
+
+} // namespace
+
+namespace MeshSimplification {
+
+void edgeCollapse(std::string const &filename, size_t outputFaceCount,
+                  GarlandHeckbertPolicy policy) {
+  if (policy == GarlandHeckbertPolicy::kNone) {
+    edgeCollapseDefault(filename, outputFaceCount);
+  } else {
+    edgeCollapseGarlandHeckbert(filename, outputFaceCount, policy);
+  }
 }
 
 } // namespace MeshSimplification

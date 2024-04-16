@@ -1,16 +1,19 @@
 #include "Application.hpp"
 
+#include "benchmark/Benchmark.hpp"
 #include "mesh-simplification/MeshSimplification.hpp"
 #include "remesh/Remesh.hpp"
 
+#include <chrono>
 #include <iostream>
 #include <sstream>
 
 Application::Application()  = default;
 Application::~Application() = default;
 
-static std::string const kRemeshCmd   = "rem";
-static std::string const kSimplifyCmd = "sim";
+static std::string const kRemeshCmd    = "rem";
+static std::string const kSimplifyCmd  = "sim";
+static std::string const kBenchmarkCmd = "ben";
 
 void Application::run() {
   for (;;) {
@@ -35,6 +38,8 @@ Application::ReturnCode Application::_commandKernal(std::string const &command) 
     return _remeshKernal();
   } else if (command == kSimplifyCmd) {
     return _simplifyKernal();
+  } else if (command == kBenchmarkCmd) {
+    return _benchmarkKernal();
   } else {
     return ReturnCode::kExit;
   }
@@ -69,13 +74,18 @@ Application::ReturnCode Application::_remeshKernal() {
     std::stringstream(inputLine) >> usingNbIter; // Convert to unsigned int
   }
 
+  // record time
+  auto start = std::chrono::high_resolution_clock::now();
   Remesh::isoRemesh(usingFileName, usingTargetEdgeLength, usingNbIter);
+  auto end                              = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> elapsed = end - start;
+  std::cout << "Time taken: " << elapsed.count() << "s" << std::endl;
 
   return ReturnCode::kContinue;
 }
 
 Application::ReturnCode Application::_simplifyKernal() {
-  static std::string usingFileName = "o_pig_lo_remeshed.obj";
+  static std::string usingFileName = "1.obj";
   std::string inputLine; // Use to read the whole line
 
   // filename
@@ -108,18 +118,47 @@ Application::ReturnCode Application::_simplifyKernal() {
       MeshSimplification::GarlandHeckbertPolicy::kClassicPlane;
   if (usingPolicy == "cp") {
     policy = MeshSimplification::GarlandHeckbertPolicy::kClassicPlane;
+    std::cout << "Using Classic Plane" << std::endl;
   } else if (usingPolicy == "pp") {
     policy = MeshSimplification::GarlandHeckbertPolicy::kProbabilisticPlane;
+    std::cout << "Using Probabilistic Plane" << std::endl;
   } else if (usingPolicy == "ct") {
     policy = MeshSimplification::GarlandHeckbertPolicy::kClassicTriangle;
+    std::cout << "Using Classic Triangle" << std::endl;
   } else if (usingPolicy == "pt") {
     policy = MeshSimplification::GarlandHeckbertPolicy::kProbabilisticTriangle;
+    std::cout << "Using Probabilistic Triangle" << std::endl;
   } else {
-    std::cerr << "Invalid policy" << std::endl;
-    return ReturnCode::kFailure;
+    policy = MeshSimplification::GarlandHeckbertPolicy::kNone;
+    std::cout << "Using Default" << std::endl;
   }
 
+  // record time
+  auto start = std::chrono::high_resolution_clock::now();
   MeshSimplification::edgeCollapse(usingFileName, usingOutputFaceCount, policy);
+  auto end                              = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> elapsed = end - start;
+  std::cout << "Time taken: " << elapsed.count() << "s" << std::endl;
+
+  return ReturnCode::kContinue;
+}
+
+Application::ReturnCode Application::_benchmarkKernal() {
+  static std::string usingFileName = "1.obj";
+  std::string inputLine; // Use to read the whole line
+
+  // filename
+  std::cout << "Enter the filename /[" << usingFileName << "]: ";
+  std::getline(std::cin, inputLine); // Read the whole line
+  if (!inputLine.empty()) {
+    usingFileName = inputLine;
+  }
+
+  if (usingFileName == "exit") {
+    return ReturnCode::kExit;
+  }
+
+  Benchmark::benchmark(usingFileName);
 
   return ReturnCode::kContinue;
 }
