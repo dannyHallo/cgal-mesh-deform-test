@@ -68,9 +68,11 @@ void edgeCollapse(std::string const &filename, size_t outputFaceCount,
   std::string const inputFilePath  = Io::makeFullInputPath(filename);
   std::string const outputFilePath = Io::makeFullOutputPath(filename);
 
-  auto maybeSurfaceMesh = _readMesh(inputFilePath);
-  assert(maybeSurfaceMesh.has_value() && "Failed to read input mesh.");
-  auto &surface_mesh = maybeSurfaceMesh.value();
+  auto maybeMesh = _readMesh(inputFilePath);
+  if (maybeMesh == std::nullopt) {
+    return;
+  }
+  auto &surface_mesh = maybeMesh.value();
 
   // SMS::edge_collapse(surface_mesh, stop);
 

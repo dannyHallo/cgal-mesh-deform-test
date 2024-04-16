@@ -60,7 +60,9 @@ void isoRemesh(std::string const &filename, double targetEdgeLength, unsigned in
   std::string const outputFilePath = Io::makeFullOutputPath(filename);
 
   auto maybeMesh = _readMesh(inputFilePath);
-  assert(maybeMesh.has_value());
+  if (maybeMesh == std::nullopt) {
+    return;
+  }
   Mesh &mesh = maybeMesh.value();
 
   std::vector<edge_descriptor> border;
