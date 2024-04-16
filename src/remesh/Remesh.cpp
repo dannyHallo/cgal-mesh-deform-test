@@ -89,7 +89,7 @@ void isoRemesh(std::string const &filename, double targetEdgeLength, unsigned in
   CGAL::IO::write_polygon_mesh(outputFilePath, mesh, CGAL::parameters::stream_precision(17));
 
   std::cout << "Remeshed mesh written to path (" << outputFilePath << ")" << std::endl;
-  // auto remeshedMeshOpt = _readMesh(outputFilePath);
+  auto remeshedMeshOpt = _readMesh(outputFilePath);
 }
 
 } // namespace Remesh

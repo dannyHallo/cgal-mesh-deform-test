@@ -14,6 +14,7 @@ Application::~Application() = default;
 static std::string const kRemeshCmd    = "rem";
 static std::string const kSimplifyCmd  = "sim";
 static std::string const kBenchmarkCmd = "ben";
+static std::string const kCustomCmd    = "cus";
 
 void Application::run() {
   for (;;) {
@@ -40,6 +41,8 @@ Application::ReturnCode Application::_commandKernal(std::string const &command) 
     return _simplifyKernal();
   } else if (command == kBenchmarkCmd) {
     return _benchmarkKernal();
+  } else if (command == kCustomCmd) {
+    return _customKernal();
   } else {
     return ReturnCode::kExit;
   }
@@ -159,6 +162,23 @@ Application::ReturnCode Application::_benchmarkKernal() {
   }
 
   Benchmark::benchmark(usingFileName);
+
+  return ReturnCode::kContinue;
+}
+
+Application::ReturnCode Application::_customKernal() {
+  for (int i = 1; i <= 10; i++) {
+    std::string usingFileName = std::to_string(i) + "_rem.obj";
+    std::cout << "Using " << usingFileName << std::endl;
+
+    // record time
+    auto start = std::chrono::high_resolution_clock::now();
+    MeshSimplification::edgeCollapse(usingFileName, 10000,
+                                     MeshSimplification::GarlandHeckbertPolicy::kNone);
+    auto end                              = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+    std::cout << "Time taken: " << elapsed.count() << "s" << std::endl;
+  }
 
   return ReturnCode::kContinue;
 }

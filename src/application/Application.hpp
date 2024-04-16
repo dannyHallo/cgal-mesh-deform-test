@@ -21,4 +21,5 @@ private:
   ReturnCode _remeshKernal();
   ReturnCode _simplifyKernal();
   ReturnCode _benchmarkKernal();
+  ReturnCode _customKernal();
 };

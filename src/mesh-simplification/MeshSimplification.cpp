@@ -63,16 +63,17 @@ void edgeCollapseDefault(std::string const &filename, size_t outputFaceCount) {
   std::string const inputFilePath  = Io::makeFullInputPath(filename);
   std::string const outputFilePath = Io::makeFullOutputPath(filename);
 
-  auto maybeSurfaceMesh = _readMesh(inputFilePath);
-  assert(maybeSurfaceMesh.has_value() && "Failed to read input mesh.");
-  auto &surface_mesh = maybeSurfaceMesh.value();
+  auto maybeMesh = _readMesh(inputFilePath);
+  if (maybeMesh == std::nullopt) {
+    return;
+  }
+  auto &mesh = maybeMesh.value();
 
   SMS::Face_count_stop_predicate<Mesh> stop(outputFaceCount);
 
-  int r = SMS::edge_collapse(surface_mesh, stop);
+  SMS::edge_collapse(mesh, stop);
 
-  CGAL::IO::write_polygon_mesh(outputFilePath, surface_mesh,
-                               CGAL::parameters::stream_precision(17));
+  CGAL::IO::write_polygon_mesh(outputFilePath, mesh, CGAL::parameters::stream_precision(17));
 
   std::cout << "Remeshed mesh written to path (" << outputFilePath << ")" << std::endl;
   // auto remeshedMeshOpt = _readMesh(outputFilePath);
@@ -87,14 +88,11 @@ void edgeCollapseGarlandHeckbert(std::string const &filename, size_t outputFaceC
   if (maybeMesh == std::nullopt) {
     return;
   }
-  auto &surface_mesh = maybeMesh.value();
+  auto &mesh = maybeMesh.value();
 
-  // SMS::edge_collapse(surface_mesh, stop);
+  _processMesh(mesh, outputFaceCount, policy);
 
-  _processMesh(surface_mesh, outputFaceCount, policy);
-
-  CGAL::IO::write_polygon_mesh(outputFilePath, surface_mesh,
-                               CGAL::parameters::stream_precision(17));
+  CGAL::IO::write_polygon_mesh(outputFilePath, mesh, CGAL::parameters::stream_precision(17));
 
   std::cout << "Remeshed mesh written to path (" << outputFilePath << ")" << std::endl;
   // auto remeshedMeshOpt = _readMesh(outputFilePath);
