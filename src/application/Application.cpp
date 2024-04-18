@@ -165,7 +165,7 @@ Application::ReturnCode Application::_repairKernal() {
     return ReturnCode::kExit;
   }
 
-  static float usingThresholdAngle = 170;
+  static float usingThresholdAngle = 130;
   std::cout << "Enter the threshold angle /[" << usingThresholdAngle << "]: ";
   std::getline(std::cin, inputLine); // Read the whole line
   if (!inputLine.empty()) {
@@ -173,7 +173,6 @@ Application::ReturnCode Application::_repairKernal() {
   }
 
   Repair::removeDegenerateFaces(usingFileName, usingThresholdAngle);
-  // Repair::detectCaps(usingFileName, usingThresholdAngle);
 
   return ReturnCode::kContinue;
 }
@@ -193,7 +192,7 @@ Application::ReturnCode Application::_benchmarkKernal() {
     return ReturnCode::kExit;
   }
 
-  static float usingThresholdAngle = 170;
+  static float usingThresholdAngle = 130;
   std::cout << "Enter the threshold angle /[" << usingThresholdAngle << "]: ";
   std::getline(std::cin, inputLine); // Read the whole line
   if (!inputLine.empty()) {
