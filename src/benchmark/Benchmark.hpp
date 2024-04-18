@@ -4,6 +4,6 @@
 
 namespace Benchmark {
 
-void benchmark(std::string const &filename);
+void benchmark(std::string const &filename, float thresholdAngle);
 
 } // namespace Benchmark

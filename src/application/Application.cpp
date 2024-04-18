@@ -3,6 +3,7 @@
 #include "benchmark/Benchmark.hpp"
 #include "mesh-simplification/MeshSimplification.hpp"
 #include "remesh/Remesh.hpp"
+#include "repair/Repair.hpp"
 
 #include <chrono>
 #include <iostream>
@@ -13,6 +14,7 @@ Application::~Application() = default;
 
 static std::string const kRemeshCmd    = "rem";
 static std::string const kSimplifyCmd  = "sim";
+static std::string const kRepairCmd    = "rep";
 static std::string const kBenchmarkCmd = "ben";
 static std::string const kCustomCmd    = "cus";
 
@@ -39,6 +41,8 @@ Application::ReturnCode Application::_commandKernal(std::string const &command) 
     return _remeshKernal();
   } else if (command == kSimplifyCmd) {
     return _simplifyKernal();
+  } else if (command == kRepairCmd) {
+    return _repairKernal();
   } else if (command == kBenchmarkCmd) {
     return _benchmarkKernal();
   } else if (command == kCustomCmd) {
@@ -146,6 +150,34 @@ Application::ReturnCode Application::_simplifyKernal() {
   return ReturnCode::kContinue;
 }
 
+Application::ReturnCode Application::_repairKernal() {
+  static std::string usingFileName = "test.obj";
+  std::string inputLine; // Use to read the whole line
+
+  // filename
+  std::cout << "Enter the filename /[" << usingFileName << "]: ";
+  std::getline(std::cin, inputLine); // Read the whole line
+  if (!inputLine.empty()) {
+    usingFileName = inputLine;
+  }
+
+  if (usingFileName == "exit") {
+    return ReturnCode::kExit;
+  }
+
+  static float usingThresholdAngle = 170;
+  std::cout << "Enter the threshold angle /[" << usingThresholdAngle << "]: ";
+  std::getline(std::cin, inputLine); // Read the whole line
+  if (!inputLine.empty()) {
+    std::stringstream(inputLine) >> usingThresholdAngle; // Convert to float
+  }
+
+  Repair::removeDegenerateFaces(usingFileName, usingThresholdAngle);
+  // Repair::detectCaps(usingFileName, usingThresholdAngle);
+
+  return ReturnCode::kContinue;
+}
+
 Application::ReturnCode Application::_benchmarkKernal() {
   static std::string usingFileName = "1.obj";
   std::string inputLine; // Use to read the whole line
@@ -161,14 +193,21 @@ Application::ReturnCode Application::_benchmarkKernal() {
     return ReturnCode::kExit;
   }
 
-  Benchmark::benchmark(usingFileName);
+  static float usingThresholdAngle = 170;
+  std::cout << "Enter the threshold angle /[" << usingThresholdAngle << "]: ";
+  std::getline(std::cin, inputLine); // Read the whole line
+  if (!inputLine.empty()) {
+    std::stringstream(inputLine) >> usingThresholdAngle; // Convert to float
+  }
+
+  Benchmark::benchmark(usingFileName, usingThresholdAngle);
 
   return ReturnCode::kContinue;
 }
 
 Application::ReturnCode Application::_customKernal() {
   for (int i = 1; i <= 10; i++) {
-    std::string usingFileName = std::to_string(i) + "_rem.obj";
+    std::string usingFileName = std::to_string(i) + ".obj";
     std::cout << "Using " << usingFileName << std::endl;
 
     // record time
